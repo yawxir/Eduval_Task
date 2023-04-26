@@ -95,9 +95,10 @@ namespace BookStore.Models
             ExecuteSQLQuery("dbo.SearchBooks", strParams, tblData);
             if (tblData.Rows.Count > 0)
             {
-                BooksDataModel objBook = new BooksDataModel();
+                
                 foreach (DataRow drItem in tblData.Rows)
                 {
+                    BooksDataModel objBook = new BooksDataModel();
                     objBook.AuthorName = drItem["AuthorName"].ToString();
                     objBook.BookId = drItem["BookId"].ToString();
                     objBook.BookTitle = drItem["BookTitle"].ToString();

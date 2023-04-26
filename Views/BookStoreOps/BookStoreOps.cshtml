@@ -7,18 +7,26 @@
 
 <style>
 
-    .invalid{
-        border:1px solid red
+    .invalid {
+        border: 1px solid red
     }
+
     table.dataTable tbody th, table.dataTable tbody td {
         text-align: left;
-         
     }
 </style>
 
-
 <script src="~/lib/datatables/datatables.js"></script>
+<script src="~/lib/datatables/pdfmake.min.js"></script>
+<script src="~/lib/datatables/Buttons-2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/datatables/Buttons-2.3.6/js/buttons.html5.min.js"></script>
+<script src="~/lib/datatables/vfs_fonts.js"></script>
+
+
+
+
 <link rel="stylesheet" href="~/lib/datatables/datatables.min.css" />
+<link rel="stylesheet" href="~/lib/datatables/Buttons-2.3.6/css/buttons.dataTables.min.css" />
 <div class="text-center">
     <h1 class="display-4">Welcome to Books Library</h1>
     <div>
@@ -31,28 +39,28 @@
                     <label>Title</label>
                 </div>
                 <div>
-                    <input type="text"  class="form-control" id="txtBookTitleSC" />
+                    <input type="text" class="form-control" id="txtBookTitleSC" />
                 </div>
             </div>
 
-      
+
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                <div> <label>Author</label></div>    <div><input type="text"   class="form-control"id="txtAuthorSC" /></div>
+                <div> <label>Author</label></div>    <div><input type="text" class="form-control" id="txtAuthorSC" /></div>
 
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <div><label>Available</label></div>    <div>
 
- 
-    <label>Yes <input id="rbYesSC" type="radio" value="value1" name="group2"> </label>
-    <label>No   <input  id="rbNoSC"type="radio" value="value1" name="group2"> </label>
- 
 
-</div>
+                    <label>Yes <input id="rbYesSC" checked="checked" type="radio" value=" " name="group4"> </label>
+                    <label>No   <input id="rbNoSC" type="radio" value=" " name="group4"> </label>
+
+
+                </div>
 
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                <div><label>Price</label></div>    <div><input type="number"  min="0"class="form-control" id="txtPriceSC" /></div>
+                <div><label>Price</label></div>    <div><input type="number" min="0" class="form-control" id="txtPriceSC" /></div>
 
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
@@ -86,56 +94,57 @@
     <button id="btnAddBook" class="float-left  btn btn-primary">Add a new book</button>
     <table id="tblBooks">
     </table>
+    <p> Total Price: <label class="totalPrice">    </label></p>
 
- 
-        <div class="modal fade MessageModal-Container child-static-modal" id="ViewReasonModal" role="dialog" style="display: none;padding-top: 170px;">
-            <div id="dlgAddNewbook" class="modal-dialog MessageModal-Header modal-md">
-              
-                <div class="modal-content">
-                    <div id="divModalHeader" class="modal-header panel-heading">
-                        <button type="button" class="close" data-dismiss="modal"></button>
-                        <h4 id="ModalTitle" class="modal-title  ">Add a new book </h4>
-                    </div>
-                    <div class="modal-body" id="MsgModalBody">
-                        <div class="row newBookFields">
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <label>Title</label>   <input class="validate form-control" type="text"  id="txtBookTitle" />
-                            </div>
 
-                           
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <label>Author</label>   <input class="validate form-control " type="text" id="txtAuthor" />
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <label>Avialability</label>
-                                <label>Yes <input id="rbYes" type="radio" value="value1" name="group2"> </label>
-                                <label>No   <input id="rbNo" type="radio" value="value1" name="group2"> </label>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <label>Price</label>   <input  class="validate form-control" type="number" min="0" id="txtPrice" />
-                            </div>
+    <div class="modal fade MessageModal-Container child-static-modal" id="ViewReasonModal" role="dialog" style="display: none;padding-top: 170px;">
+        <div id="dlgAddNewbook" class="modal-dialog MessageModal-Header modal-md">
 
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <label>Rack ID</label>                @Html.DropDownList("ddlRacks", Model.Racks as List<SelectListItem>,
+            <div class="modal-content">
+                <div id="divModalHeader" class="modal-header panel-heading">
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                    <h4 id="ModalTitle" class="modal-title  ">Add a new book </h4>
+                </div>
+                <div class="modal-body" id="MsgModalBody">
+                    <div class="row newBookFields">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label>Title</label>   <input class="validate form-control" type="text" id="txtBookTitle" />
+                        </div>
+
+
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label>Author</label>   <input class="validate form-control " type="text" id="txtAuthor" />
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label>Avialability</label>
+                            <label>Yes <input id="rbYes" checked="checked" type="radio" value="value1" name="group2"> </label>
+                            <label>No   <input id="rbNo" type="radio" value="value1" name="group2"> </label>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label>Price</label>   <input class="validate form-control" type="number" min="0" id="txtPrice" />
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label>Rack ID</label>                @Html.DropDownList("ddlRacks", Model.Racks as List<SelectListItem>,
 new { @id = "ddlRacks", @class = "InputElements form-control  validate input-circle-custom-full select2-searchable" })
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <label>Shelf ID</label>                @Html.DropDownList("ddlShelve", Model.Shelfs as List<SelectListItem>,
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label>Shelf ID</label>                @Html.DropDownList("ddlShelve", Model.Shelfs as List<SelectListItem>,
 new { @id = "ddlShelve", @class = "InputElements form-control validate input-circle-custom-full select2-searchable" })
-                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer centerAlignDivContent">
-                        <button id="btnSave" type="button" class="btn btn-primary"  > <i class="fa fa-times"></i> Save</button>
-                        <button id="btnClose" type="button" class="btn btn-primary" data-dismiss="modal"> <i class="fa fa-times"></i> Cancel</button>
-                    </div>
+                </div>
+                <div class="modal-footer centerAlignDivContent">
+                    <button id="btnSave" type="button" class="btn btn-primary"> <i class="fa fa-times"></i> Save</button>
+                    <button id="btnClose" type="button" class="btn btn-primary" data-dismiss="modal"> <i class="fa fa-times"></i> Cancel</button>
                 </div>
             </div>
         </div>
- 
+    </div>
 
 
-        <script>
+
+    <script>
         var tableData = @Html.Raw(Json.Serialize(@Model.BooksList));
 
          var     tableColumns =
@@ -155,7 +164,8 @@ new { @id = "ddlShelve", @class = "InputElements form-control validate input-cir
         $(document).ready(function () {
 
 
-
+            $('#rbYes').prop("checked", true);
+            $('#rbYesSC').prop("checked", true);
 
             $("#btnSearch").click(function () {
                 var objSearch = {}
@@ -174,7 +184,10 @@ new { @id = "ddlShelve", @class = "InputElements form-control validate input-cir
 
                 "data": tableData,
                 "aoColumns": tableColumns
-
+               , dom: 'Bfrtip',
+               buttons: [
+                   'copy', 'excel', 'pdf'
+               ]
 
             });
 
@@ -218,6 +231,9 @@ new { @id = "ddlShelve", @class = "InputElements form-control validate input-cir
 
             })
 
+
+
+            GetTotalPrice()
         })
         $('#ViewReasonModal').on('hidden.bs.modal', function () {
             $(".newBookFields .validate").each(function (ind, item) {
@@ -228,7 +244,13 @@ new { @id = "ddlShelve", @class = "InputElements form-control validate input-cir
             $("#ModalTitle").html('Add a book'); //btnSave
             $("#btnSave").text('Save'); //btnSave
         });
+            function GetTotalPrice() {
 
+
+                var totalPrice = gtblBooks.rows().data().reduce((acc, o) => acc + parseInt(o.price), 0)
+
+                $(".totalPrice").text(totalPrice)
+            }
             function GetActionButtons(data){
 
                 return "<button class=' clsAction clsDeleteBook'>Delete</button> <button class='clsAction clsUpdateBookInfo'>Update</button>"
@@ -291,12 +313,15 @@ new { @id = "ddlShelve", @class = "InputElements form-control validate input-cir
                                 gtblBooks.clear().draw();
                                 gtblBooks.rows.add(ResponseFromServer); // Add new data
                                 gtblBooks.draw();
-                                
+
                                 $('#ViewReasonModal').modal('hide')
                                 bookID = ''
+                                GetTotalPrice()
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            bookID=''
+                            $('#ViewReasonModal').modal('hide')
+                            bookID = ''
+                            GetTotalPrice()
                         }
                     });
             }
@@ -328,12 +353,13 @@ new { @id = "ddlShelve", @class = "InputElements form-control validate input-cir
                                 {
                                     alert('No Data found')
                                 }
+                                GetTotalPrice()
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-
+                            GetTotalPrice()
                         }
                     });
             }
 
-        </script>
+    </script>
 </div>
