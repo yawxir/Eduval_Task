@@ -1,3 +1,8 @@
+
+CREATE DATABASE BooksDB;
+
+
+
 create table Books   
 (
 BookId			int IDENTITY(1,1),  
