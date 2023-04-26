@@ -1,0 +1,339 @@
+﻿@{
+    ViewData["Title"] = "Books Operations";
+    @model BookStore.Models.BooksViewModel
+
+
+}
+
+<style>
+
+    .invalid{
+        border:1px solid red
+    }
+    table.dataTable tbody th, table.dataTable tbody td {
+        text-align: left;
+         
+    }
+</style>
+
+
+<script src="~/lib/datatables/datatables.js"></script>
+<link rel="stylesheet" href="~/lib/datatables/datatables.min.css" />
+<div class="text-center">
+    <h1 class="display-4">Welcome to Books Library</h1>
+    <div>
+        <h4>Search Books</h4>
+
+
+        <div class="row searchFields">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <div>
+                    <label>Title</label>
+                </div>
+                <div>
+                    <input type="text"  class="form-control" id="txtBookTitleSC" />
+                </div>
+            </div>
+
+      
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <div> <label>Author</label></div>    <div><input type="text"   class="form-control"id="txtAuthorSC" /></div>
+
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <div><label>Available</label></div>    <div>
+
+ 
+    <label>Yes <input id="rbYesSC" type="radio" value="value1" name="group2"> </label>
+    <label>No   <input  id="rbNoSC"type="radio" value="value1" name="group2"> </label>
+ 
+
+</div>
+
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <div><label>Price</label></div>    <div><input type="number"  min="0"class="form-control" id="txtPriceSC" /></div>
+
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <div><label>Rack</label></div>    <div>
+                    @Html.DropDownList("ddlRacksSC", Model.Racks as List<SelectListItem>,
+                    new { @id = "ddlRacksSC", @class = "InputElements form-control input-circle-custom-full select2-searchable" })
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <div><label>Shelve</label></div>    <div>
+                    @Html.DropDownList("ddlShelveSC", Model.Shelfs as List<SelectListItem>,
+                    new { @id = "ddlShelveSC", @class = "InputElements form-control input-circle-custom-full select2-searchable" })
+
+                </div>
+
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <button id="btnSearch" class=" float-right btn btn-primary">Search Books</button>
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+    <button id="btnAddBook" class="float-left  btn btn-primary">Add a new book</button>
+    <table id="tblBooks">
+    </table>
+
+ 
+        <div class="modal fade MessageModal-Container child-static-modal" id="ViewReasonModal" role="dialog" style="display: none;padding-top: 170px;">
+            <div id="dlgAddNewbook" class="modal-dialog MessageModal-Header modal-md">
+              
+                <div class="modal-content">
+                    <div id="divModalHeader" class="modal-header panel-heading">
+                        <button type="button" class="close" data-dismiss="modal"></button>
+                        <h4 id="ModalTitle" class="modal-title  ">Add a new book </h4>
+                    </div>
+                    <div class="modal-body" id="MsgModalBody">
+                        <div class="row newBookFields">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <label>Title</label>   <input class="validate form-control" type="text"  id="txtBookTitle" />
+                            </div>
+
+                           
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <label>Author</label>   <input class="validate form-control " type="text" id="txtAuthor" />
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <label>Avialability</label>
+                                <label>Yes <input id="rbYes" type="radio" value="value1" name="group2"> </label>
+                                <label>No   <input id="rbNo" type="radio" value="value1" name="group2"> </label>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <label>Price</label>   <input  class="validate form-control" type="number" min="0" id="txtPrice" />
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <label>Rack ID</label>                @Html.DropDownList("ddlRacks", Model.Racks as List<SelectListItem>,
+new { @id = "ddlRacks", @class = "InputElements form-control  validate input-circle-custom-full select2-searchable" })
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <label>Shelf ID</label>                @Html.DropDownList("ddlShelve", Model.Shelfs as List<SelectListItem>,
+new { @id = "ddlShelve", @class = "InputElements form-control validate input-circle-custom-full select2-searchable" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer centerAlignDivContent">
+                        <button id="btnSave" type="button" class="btn btn-primary"  > <i class="fa fa-times"></i> Save</button>
+                        <button id="btnClose" type="button" class="btn btn-primary" data-dismiss="modal"> <i class="fa fa-times"></i> Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+ 
+
+
+        <script>
+        var tableData = @Html.Raw(Json.Serialize(@Model.BooksList));
+
+         var     tableColumns =
+            [
+                 { "sTitle": "Title", "mData": "bookTitle", "sClass": "", "sDefaultContent": "" },
+                 { "sTitle": "Author Name", "mData": "authorName", "sClass": "", "sDefaultContent": "" },
+                 { "sTitle": "Price", "mData": "price", "sClass": "", "sDefaultContent": "" },
+                 { "sTitle": "Shelf ID", "mData": "shelfID", "sClass": "", "sDefaultContent": "" },
+                 { "sTitle": "Rack ID", "mData": "rackID", "sClass": "", "sDefaultContent": "" },
+                 { "sTitle": "Action", "mData": "", "sClass": "", "sDefaultContent": "", "mRender": function (data, type, row) { return GetActionButtons(data); } },
+
+            ];
+
+
+
+
+        $(document).ready(function () {
+
+
+
+
+            $("#btnSearch").click(function () {
+                var objSearch = {}
+                objSearch.BookTitle = $("#txtBookTitleSC").val().trim()
+                //objSearch.BookId = $("#txtCodeSC").val().trim()
+                objSearch.AuthorName = $("#txtAuthorSC").val().trim()
+                objSearch.IsAvialalbe = $('#rbYesSC').is(':checked')?'Y':'N'    //$("#txtAvailableSC").val().trim()
+                objSearch.Price = $("#txtPriceSC").val().trim()
+                objSearch.ShelfID = $("#ddlShelveSC").val().trim()
+                objSearch.RackID = $("#ddlRacksSC").val().trim()
+                SearchData(objSearch)
+
+            })
+
+           gtblBooks = $('#tblBooks').DataTable({
+
+                "data": tableData,
+                "aoColumns": tableColumns
+
+
+            });
+
+
+            $("#btnAddBook").click(function () {
+                $("#ViewReasonModal").modal('show');
+            })
+
+
+            $("#btnSave").click(function () {
+
+
+                var validationArr = []
+                $(".newBookFields .validate").each(function (ind, item) {
+                    if ($(item).val().trim() === "") {
+                        $(item).addClass('invalid')
+                        validationArr.push(ind)
+                    } else {
+                        $(item).removeClass('invalid')
+                    }
+                })
+
+                if (validationArr.length > 0) {
+                    alert('Please provide values for highlighted fields ')
+                }
+                else {
+
+                    var objNewBook = {}
+                    objNewBook.BookId = bookID
+                    objNewBook.BookTitle = $("#txtBookTitle").val().trim()
+                    objNewBook.AuthorName = $("#txtAuthor").val().trim()
+                    objNewBook.Price = $("#txtPrice").val().trim()
+                    objNewBook.RackID = $("#ddlRacks").val().trim()
+                    objNewBook.ShelfID = $("#ddlShelve").val().trim()
+                    objNewBook.IsAvialalbe = $('#rbYes').is(':checked') ? 'Y' : 'N';//$("#txtAvailable").val().trim()
+                    objNewBook.OperationType = $("#btnSave").text().trim()==='Save'?'I':'U'
+                    DatabaseOps(objNewBook)
+                }
+
+
+
+            })
+
+        })
+        $('#ViewReasonModal').on('hidden.bs.modal', function () {
+            $(".newBookFields .validate").each(function (ind, item) {
+                $(item).val('')
+                $(item).removeClass('invalid')
+            })
+
+            $("#ModalTitle").html('Add a book'); //btnSave
+            $("#btnSave").text('Save'); //btnSave
+        });
+
+            function GetActionButtons(data){
+
+                return "<button class=' clsAction clsDeleteBook'>Delete</button> <button class='clsAction clsUpdateBookInfo'>Update</button>"
+            }
+
+                var bookID=''
+
+            $(document).on('click', '.clsAction', function (data, item)
+            {
+                var actionType = $(this).hasClass('clsDeleteBook') ? 'Delete' : 'Update';
+                var currentRow = $(this).closest('tr');
+                var currentRowData = gtblBooks.row(currentRow).data();
+
+
+                if (actionType === 'Delete')
+                {
+                    var objNewBook = {}
+                    objNewBook.BookId = currentRowData.bookId
+                    objNewBook.OperationType = 'D'
+                    DatabaseOps(objNewBook)
+                }
+                else
+                {
+
+                    bookID = currentRowData.bookId
+                  //  $("#txtCode").val(currentRowData.bookId)
+                    $("#txtBookTitle").val(currentRowData.bookTitle)
+                    $("#txtAuthor").val(currentRowData.authorName)
+                    $("#txtPrice").val(currentRowData.price)
+                    $("#ddlShelve").val(currentRowData.shelfID)
+                    $("#ddlRacks").val(currentRowData.rackID)
+                    var isAvailable = currentRowData.isAvialalbe;
+                    if (isAvailable=='1') {
+                        $('#rbYes').prop("checked", true);
+                    } else {
+                        $('#rbNo').prop("checked", true);
+                    }
+                    //$("#txtAvailable").val(currentRowData.isAvialalbe)
+                    $("#ModalTitle").html('Update book');
+                    $("#btnSave").text('Update');
+                    $("#ViewReasonModal").modal('show');
+
+                }
+            })
+
+
+
+
+            function DatabaseOps(objBookData) {
+                       $.ajax(
+                        {
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            type: 'POST',
+                            url: "@Url.Action("ProcessABook", "BookStoreOps")",
+                                 data: JSON.stringify(objBookData),
+
+                            success: function (ResponseFromServer) {
+
+                                gtblBooks.clear().draw();
+                                gtblBooks.rows.add(ResponseFromServer); // Add new data
+                                gtblBooks.draw();
+                                
+                                $('#ViewReasonModal').modal('hide')
+                                bookID = ''
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            bookID=''
+                        }
+                    });
+            }
+
+
+
+               function SearchData(objBookData) {
+
+
+
+                         $.ajax(
+                        {
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            type: 'POST',
+                            url: "@Url.Action("SearchData", "BookStoreOps")",
+                                 data: JSON.stringify(objBookData),
+
+                            success: function (ResponseFromServer) {
+
+                                if (ResponseFromServer && ResponseFromServer.length>0)
+                                {
+                                    //gtblBooks
+                                    gtblBooks.clear().draw();
+                                    gtblBooks.rows.add(ResponseFromServer); // Add new data
+                                    gtblBooks.draw();
+                                }
+                                else
+                                {
+                                    alert('No Data found')
+                                }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+
+                        }
+                    });
+            }
+
+        </script>
+</div>
