@@ -157,7 +157,7 @@ namespace BookStore.Models
 
         public void ExecuteSQLQuery(string strQuery, List<string> paramsList, DataTable tblData)
         {
-            SqlConnection conn = new SqlConnection("user id=sa; password=kpsoft1;Initial Catalog= NPS");
+            SqlConnection conn = new SqlConnection("user id=sa; password=kpsoft1;Initial Catalog= BooksDB");
             conn.Open();
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = strQuery;
@@ -180,7 +180,7 @@ namespace BookStore.Models
         public void UpdateDelete(BooksDataModel objPostedModel)
         {
             var Query = objPostedModel.OperationType == "U" ? "dbo.UpdateBook" : "dbo.DeleteBook";
-            SqlConnection conn = new SqlConnection("user id=sa; password=kpsoft1;Initial Catalog= NPS");
+            SqlConnection conn = new SqlConnection("user id=sa; password=kpsoft1;Initial Catalog= BooksDB");
             conn.Open();
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = Query;
@@ -216,7 +216,7 @@ namespace BookStore.Models
         public void InsertNewBook(BooksDataModel objPostedModel)
         {
             var Query = "dbo.AddBook";
-            SqlConnection conn = new SqlConnection("user id=sa; password=kpsoft1;Initial Catalog= NPS");
+            SqlConnection conn = new SqlConnection("user id=sa; password=kpsoft1;Initial Catalog= BooksDB");
             conn.Open();
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = Query;
